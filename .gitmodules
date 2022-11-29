@@ -1,0 +1,3 @@
+[submodule "static/umi"]
+	path = static/umi
+	url = https://github.com/Klokinator/UnivAICharGen.git
