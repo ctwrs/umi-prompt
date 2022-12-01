@@ -11,9 +11,8 @@ import {
   useSignal,
 } from "@preact/signals";
 import { Input } from "../components/Input.tsx";
-import { asset } from "https://deno.land/x/fresh@1.1.2/runtime.ts";
+import { asset, Head } from "$fresh/runtime.ts";
 import { parsePrompt } from "../utils/parsePrompt.ts";
-import { debounce } from "https://deno.land/std@0.150.0/async/debounce.ts";
 import { JSXInternal } from "https://esm.sh/v95/preact@10.11.0/src/jsx.d.ts";
 import { isArray } from "https://deno.land/std@0.165.0/encoding/_yaml/utils.ts";
 
@@ -69,11 +68,11 @@ const parseYaml = (text: string) => {
 };
 
 const dl = (file: string) => {
-  l("downloading", file);
   if (
     !capitalization.value || !capitalization.value?.[file] ||
     downloading.value.includes(file) || data.value?.[file]
-  ) return;
+    ) return;
+    l("downloading", file);
   downloading.value.push(file);
   const actualFile = capitalization.value[file];
   fetch(
@@ -87,18 +86,30 @@ const dl = (file: string) => {
       );
     data.value = { ...data.value, [file]: parsed };
     downloading.value = downloading.value.filter((f) => f !== file);
+    console.log('dl done')
   });
 };
 
-const handleNewPrompt = (p: string) => {
-  prompt.value = p;
-  parsedPrompt.value = parsePrompt(p);
-  l("parsed prompt", parsedPrompt.value);
+const debounce = (fn: Function, ms: number) => {
+  let timeout: number | undefined;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), ms);
+  };
 };
 
-effect(() => {
+const pushHistory = debounce((s: string) => {
+  history.pushState(null, "", encodeURIComponent(s));
+}, 3000);
+
+const handleNewPrompt = (p: string) => {
+  p !== prompt.value && pushHistory(p);
+  document.title = titleString(p);
+  prompt.value = p;
+  parsedPrompt.value = parsePrompt(p);
   parsedPrompt.value?.map((match) => dl(match.file));
-});
+  l("parsed prompt",  parsedPrompt.value);
+};
 
 const autoSizeTextArea = (
   e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>,
@@ -111,7 +122,7 @@ const autoSizeTextArea = (
 const handler = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
   if (!e.currentTarget) return;
   autoSizeTextArea(e);
-  history.pushState(null, "", encodeURIComponent(e.currentTarget.value));
+  
   handleNewPrompt(e.currentTarget.value);
 };
 
@@ -125,7 +136,7 @@ const Match = (
   const dataFile = props.d.value[props.match.file.toLowerCase()];
   l("rendering match", props.match, dataFile);
   if (!dataFile) {
-    return <div>{props.match.file !== "" ? "loading..." : ""}</div>;
+    return <div>{props.match.file !== "" ? (downloading.value.includes(props.match.file) ? "loading..." : `no file "${props.match.file}", check for typos`) : ""}</div>;
   }
   const output = isArray(dataFile)
     ? dataFile
@@ -136,13 +147,13 @@ const Match = (
 
   return (
     <>
-      <span class="absolute top-[2px] right-[5px] text-red-600 text-[8px]">
+      <span class="absolute top-[-11px] right-[5px] text-red-600 text-[8px]">
         {output.length}
       </span>
       <ul>
         {Object.keys(grouped).map((x: string) => (
           <li
-            class="relative bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white"
+            class="relative bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white text-gray-900"
             onClick={() => {
               handleNewPrompt(prompt.value.replace(props.match.match, x));
             }}
@@ -205,6 +216,8 @@ const Debug = () => {
   );
 };
 
+const titleString = (s: string) => `Umi Prompt${s ? ': '+s : s}`;
+
 export default function Main(props: { prompt: string }) {
   useEffect(() => {
     handleNewPrompt(props.prompt);
@@ -240,13 +253,15 @@ export default function Main(props: { prompt: string }) {
     });
   }, []);
 
-  const onInput = useMemo(() => debounce(handler, 100), []);
-
-  return (
-    <div class="place-content-center relative">
+  return (<>
+    <Head>
+    <title>{titleString(props.prompt)}</title>
+  </Head>
+    <div class="place-content-center relative p-2">
       {/* <Debug /> */}
 
       <List />
     </div>
+    </>
   );
 }
