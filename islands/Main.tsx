@@ -98,12 +98,13 @@ const debounce = (fn: Function, ms: number) => {
   };
 };
 
-const pushHistory = debounce((s: string) => {
+const pushHistory = (s: string) => {
   history.pushState(null, "", encodeURIComponent(s));
-}, 3000);
+};
+const dbPushHistory = debounce(pushHistory, 3000);
 
 const handleNewPrompt = (p: string) => {
-  p !== prompt.value && pushHistory(p);
+  p !== prompt.value && Math.abs(p.length-prompt.value.length) > 4 ? pushHistory(p) : dbPushHistory(p);
   document.title = titleString(p);
   prompt.value = p;
   parsedPrompt.value = parsePrompt(p);
