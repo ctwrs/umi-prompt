@@ -32,11 +32,16 @@ const l = console.log;
 
 const useUuid = () => useMemo(() => crypto.randomUUID(), []);
 
-const prompt = signal('');
-const parsedPrompt = signal<{ match: string, file: string, tags: RegExpMatchArray | null}[] | undefined>(undefined);
+const prompt = signal("");
+export type Match = {
+  match: string;
+  file: string;
+  tags: RegExpMatchArray | null;
+};
+export type Matches = Match[] | undefined;
+const parsedPrompt = signal<Matches>(undefined);
 
 const capitalization = signal<Record<string, string>>({});
-
 
 const downloading = signal<string[]>([]);
 
@@ -55,92 +60,163 @@ const parseYaml = (text: string) => {
       return acc;
     }, {} as Record<string, Record<string, boolean>>);
   } catch (e) {
-    console.error('show actual errors in the ui that a file is corrupted yaml', e);
+    console.error(
+      "show actual errors in the ui that a file is corrupted yaml",
+      e,
+    );
     return {};
   }
 };
 
 const dl = (file: string) => {
-  if (!capitalization.value || !capitalization.value?.[file] || downloading.value.includes(file)) return;
+  l("downloading", file);
+  if (
+    !capitalization.value || !capitalization.value?.[file] ||
+    downloading.value.includes(file) || data.value?.[file]
+  ) return;
   downloading.value.push(file);
   const actualFile = capitalization.value[file];
   fetch(
-        "https://raw.githubusercontent.com/Klokinator/UnivAICharGen/master/wildcards/" + actualFile,
-      ).then((res) => res.text()).then((text) => {
-        const parsed = actualFile.includes('.yaml') ? parseYaml(text) : text.split('\n').filter((x: string) => x.trim() !== '' && !x.trim().startsWith('#'));
-        data.value = { ...data.value, [file]: parsed };
-        downloading.value = downloading.value.filter((f) => f !== file);
-      });
-}
+    "https://raw.githubusercontent.com/Klokinator/UnivAICharGen/master/wildcards/" +
+      actualFile,
+  ).then((res) => res.text()).then((text) => {
+    const parsed = actualFile.includes(".yaml")
+      ? parseYaml(text)
+      : text.split("\n").filter((x: string) =>
+        x.trim() !== "" && !x.trim().startsWith("#")
+      );
+    data.value = { ...data.value, [file]: parsed };
+    downloading.value = downloading.value.filter((f) => f !== file);
+  });
+};
 
 const handleNewPrompt = (p: string) => {
   prompt.value = p;
   parsedPrompt.value = parsePrompt(p);
-  parsedPrompt.value?.map((match) => dl(match.file));
-}
-
-const x = effect(() => {
-  if (downloading.value.length !== 0) return;
-  parsedPrompt.value = parsePrompt(prompt.value);
-});
-
-const handler = (e: JSXInternal.TargetedEvent<HTMLInputElement, Event>) => {
-  if (!e.currentTarget) return;
-  l(e.currentTarget.value)
-  prompt.value = e.currentTarget.value;
-  handleNewPrompt(prompt.value);
+  l("parsed prompt", parsedPrompt.value);
 };
 
-const d = _.throttle(handler, 100);
+effect(() => {
+  parsedPrompt.value?.map((match) => dl(match.file));
+});
 
-const Match = (props: { d: Signal<Data>; dl: Signal<string[]>; match : { match: string, file: string, tags: RegExpMatchArray | null} }) => {
-  const dataFile = props.d.value[props.match.file];
-  if (!dataFile || props.dl.value.length === 0) return <div>loading...</div>;
-  const output = isArray(dataFile) ? dataFile : Object.keys(dataFile).filter((key: string) => props.match.tags?.every((tag) => dataFile[key][tag.toLowerCase()]));
-  return (<ul>
-    {output.map((x: string) => <li>{x}</li>)}
-  </ul>);
-}
+const autoSizeTextArea = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
+  if (!e.currentTarget) return;
+  e.currentTarget.style.height = 'auto';
+  e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 10}px`;
+};
+
+const handler = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
+  if (!e.currentTarget) return;
+  autoSizeTextArea(e);
+  history.pushState(null, "", encodeURIComponent(e.currentTarget.value));
+  handleNewPrompt(e.currentTarget.value);
+};
+
+const Match = (
+  props: {
+    d: Signal<Data>;
+    dl: Signal<string[]>;
+    match: { match: string; file: string; tags: RegExpMatchArray | null };
+  },
+) => {
+  const dataFile = props.d.value[props.match.file.toLowerCase()];
+  l("rendering match", props.match, dataFile);
+  if (!dataFile) return <div>{ props.match.file !== '' ? 'loading...' : ''}</div>;
+  const output = isArray(dataFile)
+    ? dataFile
+    : Object.keys(dataFile).filter((key: string) =>
+      props.match.tags?.every((tag) => dataFile[key][tag.toLowerCase()])
+    );
+  return (
+    <ul>
+      {output.map((x: string) => <li class='bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white' onClick={() => {
+        handleNewPrompt(prompt.value.replace(props.match.match, x));
+      }}>{x}</li>)}
+    </ul>
+  );
+};
+
+const List = () => {
+  return (
+      <table class="align-top table-auto w-full p-10">
+        <thead>
+          <tr> <td  colSpan={parsedPrompt.value?.length}><div class='sticky left-0 '>
+        <textarea
+          // class='w-auto w-5/6 sm:w-full md:w-5/6'
+          class="w-[100%] text-sm border-1 border-gray-100 transition duration-150 ease-in-out"
+          value={prompt.value}
+          onKeyUp={handler}
+          onfocusin={autoSizeTextArea}
+          type="text"
+        />
+        </div></td>     </tr>
+          <tr class='align-bottom text-sm'>
+            {parsedPrompt.value?.map((match) => <th>{match.match}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          <tr class=" align-top ">
+          {parsedPrompt.value?.map((match) => (
+              <td>
+                <Match d={data} dl={downloading} match={match} />
+              </td>
+          ))}
+            </tr>
+        </tbody>
+      </table>
+  );
+};
+
+const Debug = () => {
+  console.log(data.value);
+  return (
+    <div class="w-full">
+      <pre>{downloading}</pre>
+      <pre>{Object.keys(data?.value)}</pre>
+    </div>
+  );
+};
 
 export default function Main(props: { prompt: string }) {
   useEffect(() => {
-    prompt.value = props.prompt;
-    handleNewPrompt(prompt.value);
-  }, [])
+    handleNewPrompt(props.prompt);
+  }, []);
+
+  useEffect(() => {
+    const listener = () => handleNewPrompt(decodeURIComponent(globalThis.location.pathname.slice(1)));
+    globalThis.addEventListener('popstate', listener);
+
+    return () => {
+      globalThis.removeEventListener('popstate', listener);
+    };
+  }, []);
 
   useEffect(() => {
     fetch(asset("/files.txt")).then(async (res) => {
       const files = await res.text();
       capitalization.value = files
         .split("\n")
-        .filter((f) => f && !f.startsWith("#") && (f.endsWith(".txt") || f.endsWith('.yaml')))
+        .filter((f) =>
+          f && !f.startsWith("#") && (f.endsWith(".txt") || f.endsWith(".yaml"))
+        )
         .reduce((acc, file) => {
-          acc[file.toLowerCase().split('.')[0]] = file;
+          acc[file.toLowerCase().split(".")[0]] = file;
           return acc;
         }, {} as Record<string, string>);
-
-      // testing
-      // handleNewPrompt('<clothing|[HighSFW]> adsf');
-
+    }).then(() => {
+      if (!prompt.value) return;
+      setTimeout(() => handleNewPrompt(prompt.value));
     });
   }, []);
 
   const onInput = useMemo(() => debounce(handler, 100), []);
 
   return (
-    <div class="container place-content-center">
-      <div class='m-00'>
-      <input
-        // class='w-auto w-5/6 sm:w-full md:w-5/6'
-        class="w-full border-1 h-[32px] border-gray-100 transition duration-150 ease-in-out"
-        value={prompt.value}
-        onKeyUp={d}
-        type="text"
-      />
-      </div>
-      <div class='w-full'>
-      {parsedPrompt.value?.map((match) => (<Match d={data} dl={downloading} match={match} />)) || <></>}
-      </div>
+    <div class="place-content-center relative">
+      {/* <Debug /> */}
+
+      <List />
     </div>
   );
 }

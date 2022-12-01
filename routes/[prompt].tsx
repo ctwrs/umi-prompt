@@ -12,7 +12,7 @@ export default function Home(props: PageProps) {
       <Head>
         <title>Umi Prompt: {prompt}</title>
       </Head>
-      <div class="p-4 mx-auto max-w-screen-md">
+      <div class="p-4">
         <Main prompt={prompt} />
       </div>
     </>

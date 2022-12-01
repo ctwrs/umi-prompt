@@ -1,4 +1,4 @@
-import { asset, Head } from "$fresh/runtime.ts";
+import { Head } from "$fresh/runtime.ts";
 import Main from "../islands/Main.tsx";
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
       <Head>
         <title>Umi Prompt</title>
       </Head>
-      <div class="p-4 mx-auto max-w-screen-md">
+      <div class="p-4">
         <Main prompt="" />
       </div>
     </>
