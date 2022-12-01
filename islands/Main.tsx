@@ -100,9 +100,11 @@ effect(() => {
   parsedPrompt.value?.map((match) => dl(match.file));
 });
 
-const autoSizeTextArea = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
+const autoSizeTextArea = (
+  e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>,
+) => {
   if (!e.currentTarget) return;
-  e.currentTarget.style.height = 'auto';
+  e.currentTarget.style.height = "auto";
   e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 10}px`;
 };
 
@@ -122,49 +124,74 @@ const Match = (
 ) => {
   const dataFile = props.d.value[props.match.file.toLowerCase()];
   l("rendering match", props.match, dataFile);
-  if (!dataFile) return <div>{ props.match.file !== '' ? 'loading...' : ''}</div>;
+  if (!dataFile) {
+    return <div>{props.match.file !== "" ? "loading..." : ""}</div>;
+  }
   const output = isArray(dataFile)
     ? dataFile
     : Object.keys(dataFile).filter((key: string) =>
       props.match.tags?.every((tag) => dataFile[key][tag.toLowerCase()])
     );
+  const grouped = _.groupBy(output, (x) => x);
+
   return (
-    <ul>
-      {output.map((x: string) => <li class='bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white' onClick={() => {
-        handleNewPrompt(prompt.value.replace(props.match.match, x));
-      }}>{x}</li>)}
-    </ul>
+    <>
+      <span class="absolute top-[2px] right-[5px] text-red-600 text-[8px]">
+        {output.length}
+      </span>
+      <ul>
+        {Object.keys(grouped).map((x: string) => (
+          <li
+            class="relative bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white"
+            onClick={() => {
+              handleNewPrompt(prompt.value.replace(props.match.match, x));
+            }}
+          >
+            {grouped[x].length > 1 && (
+              <span class="absolute bottom-[0px] right-[5px] text-blue-600 text-[8px]">
+                {grouped[x].length}
+              </span>
+            )}
+            {x}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };
 
 const List = () => {
   return (
-      <table class="align-top table-auto w-full p-10">
-        <thead>
-          <tr> <td  colSpan={parsedPrompt.value?.length}><div class='sticky left-0 '>
-        <textarea
-          // class='w-auto w-5/6 sm:w-full md:w-5/6'
-          class="w-[100%] text-sm border-1 border-gray-100 transition duration-150 ease-in-out"
-          value={prompt.value}
-          onKeyUp={handler}
-          onfocusin={autoSizeTextArea}
-          type="text"
-        />
-        </div></td>     </tr>
-          <tr class='align-bottom text-sm'>
-            {parsedPrompt.value?.map((match) => <th>{match.match}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          <tr class=" align-top ">
+    <table class="align-top table-auto w-full p-10">
+      <thead>
+        <tr>
+          <td colSpan={parsedPrompt.value?.length}>
+            <div>
+              <textarea
+                // class='w-auto w-5/6 sm:w-full md:w-5/6'
+                class="w-[100%] text-sm border-1 border-gray-100 transition duration-150 ease-in-out"
+                value={prompt.value}
+                onKeyUp={handler}
+                onfocusin={autoSizeTextArea}
+                type="text"
+              />
+            </div>
+          </td>
+        </tr>
+        <tr class="align-bottom text-sm">
+          {parsedPrompt.value?.map((match) => <th>{match.match}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <tr class=" align-top ">
           {parsedPrompt.value?.map((match) => (
-              <td>
-                <Match d={data} dl={downloading} match={match} />
-              </td>
+            <td class="relative">
+              <Match d={data} dl={downloading} match={match} />
+            </td>
           ))}
-            </tr>
-        </tbody>
-      </table>
+        </tr>
+      </tbody>
+    </table>
   );
 };
 
@@ -184,11 +211,14 @@ export default function Main(props: { prompt: string }) {
   }, []);
 
   useEffect(() => {
-    const listener = () => handleNewPrompt(decodeURIComponent(globalThis.location.pathname.slice(1)));
-    globalThis.addEventListener('popstate', listener);
+    const listener = () =>
+      handleNewPrompt(
+        decodeURIComponent(globalThis.location.pathname.slice(1)),
+      );
+    globalThis.addEventListener("popstate", listener);
 
     return () => {
-      globalThis.removeEventListener('popstate', listener);
+      globalThis.removeEventListener("popstate", listener);
     };
   }, []);
 
