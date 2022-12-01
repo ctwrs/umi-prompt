@@ -1,7 +1,7 @@
 import { JSX } from "preact";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 
-export function Imput(props: JSX.HTMLAttributes<HTMLInputElement>) {
+export function Input(props: JSX.HTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}

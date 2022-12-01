@@ -1,0 +1,103 @@
+# cd umi/wildcards/ && find "`pwd`"
+Clothing Tags.txt
+Clothing.yaml
+Colors.txt
+CONFIG
+CONFIG/Clothes Config NSFW U.txt
+CONFIG/Clothes Config SFW U.txt
+CONFIG/Clothes Extra Config.txt
+CONFIG/Hair Config U.txt
+CONFIG/Oneshot H Manga Config.txt
+CONFIG/Preset Config NSFW.txt
+CONFIG/Preset Config SFW.txt
+CONFIG/Scene Setup.txt
+CORE.txt
+NSFW.txt
+PRESETS
+PRESETS/NSFW
+PRESETS/NSFW/Cocksucking Cunts.txt
+PRESETS/NSFW/Doll Girls NSFW.txt
+PRESETS/NSFW/Oneshot H-Manga.txt
+PRESETS/NSFW/Raving Robogirls.txt
+PRESETS/NSFW/Specialized Species.txt
+PRESETS/NSFW/Straddling Sluts.txt
+PRESETS/NSFW/Superior Slimegirls.txt
+PRESETS/SFW
+PRESETS/SFW/Cryoverse Girls.txt
+PRESETS/SFW/Cryoverse Guys.txt
+PRESETS/SFW/Custom Characters.txt
+PRESETS/SFW/Detailed Face Girls.txt
+PRESETS/SFW/Random Popular Girls.txt
+PRESETS/SFW/Specialized Species.txt
+README.txt
+REFS
+REFS/BODY
+REFS/BODY/Animal Ears.txt
+REFS/BODY/Animal Tail.txt
+REFS/BODY/Body Mass F.txt
+REFS/BODY/Body Mass M.txt
+REFS/BODY/Body Mass U.txt
+REFS/BODY/Body Types Female NSFW.txt
+REFS/BODY/Body Types Female SFW.txt
+REFS/BODY/Body Types Male NSFW.txt
+REFS/BODY/Body Types Male SFW.txt
+REFS/BODY/Ear Types.txt
+REFS/BODY/Eye Colors.txt
+REFS/BODY/Eye Types.txt
+REFS/BODY/Face Decorations.txt
+REFS/BODY/Hair Color Types.txt
+REFS/BODY/Hair Colors Alt.txt
+REFS/BODY/Hair Colors.txt
+REFS/BODY/Hair Lengths.txt
+REFS/BODY/Hair Styles.txt
+REFS/BODY/Horns.txt
+REFS/BODY/Size Breasts.txt
+REFS/BODY/Size Penis.txt
+REFS/BODY/Skin Colors Human.txt
+REFS/BODY/Skin Colors.txt
+REFS/BODY/Wings.txt
+REFS/CLOTHING
+REFS/CLOTHING/FullbodyNSFWF.txt
+REFS/CLOTHING/FullbodyNSFWM.txt
+REFS/CLOTHING/FullbodyNSFWU.txt
+REFS/CLOTHING/FullbodySFWF.txt
+REFS/CLOTHING/FullbodySFWM.txt
+REFS/CLOTHING/FullbodySFWU.txt
+REFS/CLOTHING/LowerNSFWF.txt
+REFS/CLOTHING/LowerNSFWM.txt
+REFS/CLOTHING/LowerNSFWU.txt
+REFS/CLOTHING/LowerSFWF.txt
+REFS/CLOTHING/LowerSFWM.txt
+REFS/CLOTHING/LowerSFWU.txt
+REFS/CLOTHING/Misc-Earrings.txt
+REFS/CLOTHING/Misc-Glasses.txt
+REFS/CLOTHING/Misc-Glove Colors.txt
+REFS/CLOTHING/Misc-Gloves.txt
+REFS/CLOTHING/Misc-Headwear.txt
+REFS/CLOTHING/Misc-Neckwear.txt
+REFS/CLOTHING/Misc-Shoes.txt
+REFS/CLOTHING/Misc-Tattoos.txt
+REFS/CLOTHING/ModifierNSFW.txt
+REFS/CLOTHING/ModifierNSFWF.txt
+REFS/CLOTHING/ModifierNSFWM.txt
+REFS/CLOTHING/ModifierSFW.txt
+REFS/CLOTHING/ModifierSFWF.txt
+REFS/CLOTHING/ModifierSFWM.txt
+REFS/CLOTHING/UpperNSFWF.txt
+REFS/CLOTHING/UpperNSFWM.txt
+REFS/CLOTHING/UpperNSFWU.txt
+REFS/CLOTHING/UpperSFWF.txt
+REFS/CLOTHING/UpperSFWM.txt
+REFS/CLOTHING/UpperSFWU.txt
+REFS/Popular Female Characters.txt
+REFS/SETUP
+REFS/SETUP/Art Styles.txt
+REFS/SETUP/Camera Angles.txt
+REFS/SETUP/Emotions.txt
+REFS/SETUP/Location.txt
+REFS/SETUP/LocationAdaptedSFW.txt
+REFS/SETUP/Poses General.txt
+REFS/SETUP/Spellbook.txt
+REFS/SETUP/test.txt
+SFW.txt
+test.yaml
