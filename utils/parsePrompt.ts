@@ -5,8 +5,9 @@ const tags_regex = /(?<=\[)(.*?)(?=\])/g;
 
 export const parsePrompt = (prompt: string): Matches => {
     const matches = prompt.match(prompt_regex)?.map((match) => {
-        const file = match.split('|')[0].replaceAll('<', '').replaceAll('__', '').toLowerCase();
+        const file = match.indexOf(':') !== -1 ? match.split(':')[0].replaceAll('<', '').replaceAll('__', '').toLowerCase() : '';
         const tags = match.match(tags_regex);
+        console.log(match, file, tags);
         return { match, file, tags };
     });
 

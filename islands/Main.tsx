@@ -10,7 +10,6 @@ import {
   useComputed,
   useSignal,
 } from "@preact/signals";
-import { Input } from "../components/Input.tsx";
 import { asset, Head } from "$fresh/runtime.ts";
 import { parsePrompt } from "../utils/parsePrompt.ts";
 import { JSXInternal } from "https://esm.sh/v95/preact@10.11.0/src/jsx.d.ts";
@@ -68,14 +67,18 @@ const parseYaml = (text: string) => {
 };
 
 const dl = (file: string) => {
+  if (file === "") {
+    dlAllYaml();
+    return;
+  }
   if (
     !capitalization.value || !capitalization.value?.[file] ||
     downloading.value.includes(file) || data.value?.[file]
     ) return;
     l("downloading", file);
   downloading.value.push(file);
-  const actualFile = capitalization.value[file];
-  fetch(
+  const actualFile = file.includes('.') ? file : capitalization.value[file];
+  return fetch(
     "https://raw.githubusercontent.com/Klokinator/UnivAICharGen/master/wildcards/" +
       actualFile,
   ).then((res) => res.text()).then((text) => {
@@ -89,6 +92,25 @@ const dl = (file: string) => {
     console.log('dl done')
   });
 };
+
+const dlAllYaml = () => {
+  if (!capitalization.value || !Object.keys(capitalization.value).length || data.value[''] || downloading.value.includes('')) return;
+  downloading.value.push('');
+  l('downloading all yaml');
+  const files = Object.values(capitalization.value).filter(k => k.includes('.yaml'));
+  l(files)
+  Promise.all(files.map(f => dl(f.split('.')[0].toLowerCase()))).then(() => {
+    data.value = { ...data.value, ['']: files.reduce((acc, f) => {
+      acc = { ...acc, ...data.value[f.split('.')[0].toLowerCase()] };
+      data
+      return acc;
+    }, {})};
+  }).finally(() => {
+    l(data.value)
+    downloading.value = downloading.value.filter((f) => f !== '');
+  });
+};
+
 
 const debounce = (fn: Function, ms: number) => {
   let timeout: number | undefined;
@@ -134,6 +156,7 @@ const Match = (
     match: { match: string; file: string; tags: RegExpMatchArray | null };
   },
 ) => {
+  console.log( props.d.value[''])
   const dataFile = props.d.value[props.match.file.toLowerCase()];
   l("rendering match", props.match, dataFile);
   if (!dataFile) {
@@ -145,7 +168,7 @@ const Match = (
       props.match.tags?.every((tag) => dataFile[key][tag.toLowerCase()])
     );
   const grouped = _.groupBy(output, (x) => x);
-
+  l("output", output);
   return (
     <>
       <span class="absolute top-[-11px] right-[5px] text-red-600 text-[8px]">
@@ -248,6 +271,7 @@ export default function Main(props: { prompt: string }) {
           acc[file.toLowerCase().split(".")[0]] = file;
           return acc;
         }, {} as Record<string, string>);
+      l("capitalization", capitalization.value);
     }).then(() => {
       if (!prompt.value) return;
       setTimeout(() => handleNewPrompt(prompt.value));
