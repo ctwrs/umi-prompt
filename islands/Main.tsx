@@ -74,10 +74,10 @@ const dl = (file: string) => {
   if (
     !capitalization.value || !capitalization.value?.[file] ||
     downloading.value.includes(file) || data.value?.[file]
-    ) return;
-    l("downloading", file);
+  ) return;
+  l("downloading", file);
   downloading.value.push(file);
-  const actualFile = file.includes('.') ? file : capitalization.value[file];
+  const actualFile = file.includes(".") ? file : capitalization.value[file];
   return fetch(
     "https://raw.githubusercontent.com/Klokinator/UnivAICharGen/master/wildcards/" +
       actualFile,
@@ -89,28 +89,35 @@ const dl = (file: string) => {
       );
     data.value = { ...data.value, [file]: parsed };
     downloading.value = downloading.value.filter((f) => f !== file);
-    console.log('dl done')
+    console.log("dl done");
   });
 };
 
 const dlAllYaml = () => {
-  if (!capitalization.value || !Object.keys(capitalization.value).length || data.value[''] || downloading.value.includes('')) return;
-  downloading.value.push('');
-  l('downloading all yaml');
-  const files = Object.values(capitalization.value).filter(k => k.includes('.yaml'));
-  l(files)
-  Promise.all(files.map(f => dl(f.split('.')[0].toLowerCase()))).then(() => {
-    data.value = { ...data.value, ['']: files.reduce((acc, f) => {
-      acc = { ...acc, ...data.value[f.split('.')[0].toLowerCase()] };
-      data
-      return acc;
-    }, {})};
+  if (
+    !capitalization.value || !Object.keys(capitalization.value).length ||
+    data.value[""] || downloading.value.includes("")
+  ) return;
+  downloading.value.push("");
+  l("downloading all yaml");
+  const files = Object.values(capitalization.value).filter((k) =>
+    k.includes(".yaml")
+  );
+  l(files);
+  Promise.all(files.map((f) => dl(f.split(".")[0].toLowerCase()))).then(() => {
+    data.value = {
+      ...data.value,
+      [""]: files.reduce((acc, f) => {
+        acc = { ...acc, ...data.value[f.split(".")[0].toLowerCase()] };
+        data;
+        return acc;
+      }, {}),
+    };
   }).finally(() => {
-    l(data.value)
-    downloading.value = downloading.value.filter((f) => f !== '');
+    l(data.value);
+    downloading.value = downloading.value.filter((f) => f !== "");
   });
 };
-
 
 const debounce = (fn: Function, ms: number) => {
   let timeout: number | undefined;
@@ -126,12 +133,14 @@ const pushHistory = (s: string) => {
 const dbPushHistory = debounce(pushHistory, 3000);
 
 const handleNewPrompt = (p: string) => {
-  p !== prompt.value && Math.abs(p.length-prompt.value.length) > 4 ? pushHistory(p) : dbPushHistory(p);
+  p !== prompt.value && Math.abs(p.length - prompt.value.length) > 4
+    ? pushHistory(p)
+    : dbPushHistory(p);
   document.title = titleString(p);
   prompt.value = p;
   parsedPrompt.value = parsePrompt(p);
   parsedPrompt.value?.map((match) => dl(match.file));
-  l("parsed prompt",  parsedPrompt.value);
+  l("parsed prompt", parsedPrompt.value);
 };
 
 const autoSizeTextArea = (
@@ -145,7 +154,7 @@ const autoSizeTextArea = (
 const handler = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
   if (!e.currentTarget) return;
   autoSizeTextArea(e);
-  
+
   handleNewPrompt(e.currentTarget.value);
 };
 
@@ -156,16 +165,31 @@ const Match = (
     match: { match: string; file: string; tags: RegExpMatchArray | null };
   },
 ) => {
-  console.log( props.d.value[''])
+  console.log(props.d.value[""]);
   const dataFile = props.d.value[props.match.file.toLowerCase()];
   l("rendering match", props.match, dataFile);
   if (!dataFile) {
-    return <div>{props.match.file !== "" ? (downloading.value.includes(props.match.file) ? "loading..." : `no file "${props.match.file}", check for typos`) : ""}</div>;
+    return (
+      <div>
+        {props.match.file !== ""
+          ? (downloading.value.includes(props.match.file)
+            ? "loading..."
+            : `no file "${props.match.file}", check for typos`)
+          : ""}
+      </div>
+    );
   }
   const output = isArray(dataFile)
     ? dataFile
     : Object.keys(dataFile).filter((key: string) =>
-      props.match.tags?.every((tag) => dataFile[key][tag.toLowerCase()])
+      props.match.tags?.every((tag) => {
+        if (tag.includes("--")) {
+          return !dataFile[key][tag.replace("--", "").toLowerCase()];
+        } else if (tag.includes("|")) {
+          return tag.split("|").some((t) => dataFile[key][t.toLowerCase()]);
+        }
+        return dataFile[key][tag.toLowerCase()];
+      })
     );
   const grouped = _.groupBy(output, (x) => x);
   l("output", output);
@@ -240,7 +264,7 @@ const Debug = () => {
   );
 };
 
-const titleString = (s: string) => `Umi Prompt${s ? ': '+s : s}`;
+const titleString = (s: string) => `Umi Prompt${s ? ": " + s : s}`;
 
 export default function Main(props: { prompt: string }) {
   useEffect(() => {
@@ -278,15 +302,16 @@ export default function Main(props: { prompt: string }) {
     });
   }, []);
 
-  return (<>
-    <Head>
-    <title>{titleString(props.prompt)}</title>
-  </Head>
-    <div class="place-content-center relative p-2">
-      {/* <Debug /> */}
+  return (
+    <>
+      <Head>
+        <title>{titleString(props.prompt)}</title>
+      </Head>
+      <div class="place-content-center relative p-2">
+        {/* <Debug /> */}
 
-      <List />
-    </div>
+        <List />
+      </div>
     </>
   );
 }
