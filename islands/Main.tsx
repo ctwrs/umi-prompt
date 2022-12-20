@@ -154,8 +154,11 @@ const autoSizeTextArea = (
 const handler = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
   if (!e.currentTarget) return;
   autoSizeTextArea(e);
-
-  handleNewPrompt(e.currentTarget.value);
+  // @ts-ignore
+  if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    handleNewPrompt(e.currentTarget.value);
+  }
 };
 
 const Match = (
@@ -229,9 +232,9 @@ const List = () => {
             <div>
               <textarea
                 // class='w-auto w-5/6 sm:w-full md:w-5/6'
-                class="w-[100%] text-sm border-1 border-gray-100 transition duration-150 ease-in-out"
+                class="p-1 w-[100%] text-sm border-1 border-gray-100 transition duration-150 ease-in-out"
                 value={prompt.value}
-                onKeyUp={handler}
+                onKeyDown={handler}
                 onfocusin={autoSizeTextArea}
                 type="text"
               />
