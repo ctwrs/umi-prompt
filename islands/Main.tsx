@@ -201,10 +201,11 @@ const Match = (
       <ul>
         {Object.keys(grouped).map((x: string) => (
           <li
-            class="relative bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white text-gray-900"
+            class="renders-data-tags relative bg-gray-100 text-sm hover:bg-blue-200 cursor-pointer border-b-1 border-white text-gray-900"
             onClick={() => {
               handleNewPrompt(prompt.value.replace(props.match.match, x));
             }}
+            data-tags={isArray(dataFile) ? 'no preview, array' : Object.keys(dataFile[x]).join('\n')}
           >
             {grouped[x].length > 1 && (
               <span class="absolute bottom-[0px] right-[5px] text-blue-600 text-[8px]">
@@ -304,6 +305,14 @@ export default function Main(props: { prompt: string }) {
 
   return (
     <>
+    <style> {`
+    .renders-data-tags:hover::after {
+        content: attr(data-tags);
+        display: block;
+        white-space: pre;
+        color: gray;
+    }
+    `}</style>
       <Head>
         <title>{titleString(props.prompt)}</title>
       </Head>
