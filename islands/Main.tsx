@@ -14,6 +14,7 @@ import { asset, Head } from "$fresh/runtime.ts";
 import { parsePrompt } from "../utils/parsePrompt.ts";
 import { JSXInternal } from "https://esm.sh/v95/preact@10.11.0/src/jsx.d.ts";
 import { isArray } from "https://deno.land/std@0.165.0/encoding/_yaml/utils.ts";
+import { AutoSuggest } from "../components/AutoSuggest.tsx";
 
 let ls: Storage;
 if (typeof localStorage !== "undefined") {
@@ -143,22 +144,14 @@ const handleNewPrompt = (p: string) => {
   l("parsed prompt", parsedPrompt.value);
 };
 
-const autoSizeTextArea = (
-  e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>,
-) => {
-  if (!e.currentTarget) return;
-  e.currentTarget.style.height = "auto";
-  e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 10}px`;
-};
-
 const handler = (e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>) => {
   if (!e.currentTarget) return;
-  autoSizeTextArea(e);
+
   // @ts-ignore
-  if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
-    e.preventDefault();
+  // if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+    // e.preventDefault();
     handleNewPrompt(e.currentTarget.value);
-  }
+  // }
 };
 
 const Match = (
@@ -168,9 +161,9 @@ const Match = (
     match: { match: string; file: string; tags: RegExpMatchArray | null };
   },
 ) => {
-  console.log(props.d.value[""]);
+  // console.log(props.d.value[""]);
   const dataFile = props.d.value[props.match.file.toLowerCase()];
-  l("rendering match", props.match, dataFile);
+  // l("rendering match", props.match, dataFile);
   if (!dataFile) {
     return (
       <div>
@@ -230,12 +223,13 @@ const List = () => {
         <tr>
           <td colSpan={parsedPrompt.value?.length}>
             <div>
-              <textarea
+              <AutoSuggest
+                dictionary={data.value[""]}
+                onTagSelect={(s) => handleNewPrompt(s)}
                 // class='w-auto w-5/6 sm:w-full md:w-5/6'
                 class="p-1 w-[100%] text-sm border-1 border-gray-100 transition duration-150 ease-in-out"
                 value={prompt.value}
-                onKeyDown={handler}
-                onfocusin={autoSizeTextArea}
+                onNewValue={handleNewPrompt}
                 type="text"
               />
             </div>
@@ -303,6 +297,8 @@ export default function Main(props: { prompt: string }) {
     }).then(() => {
       if (!prompt.value) return;
       setTimeout(() => handleNewPrompt(prompt.value));
+    }).then(() => {
+      dlAllYaml();
     });
   }, []);
 
