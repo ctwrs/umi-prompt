@@ -1,19 +1,14 @@
 import { lodash as _ } from "lodash";
-import { parse, stringify } from "yaml";
+import { parse } from "yaml";
 
 import { useEffect, useMemo } from "preact/hooks";
 import {
-  computed,
-  effect,
   Signal,
   signal,
-  useComputed,
-  useSignal,
 } from "@preact/signals";
 import { asset, Head } from "$fresh/runtime.ts";
 import { parsePrompt } from "../utils/parsePrompt.ts";
-import { JSXInternal } from "https://esm.sh/v95/preact@10.11.0/src/jsx.d.ts";
-import { isArray } from "https://deno.land/std@0.165.0/encoding/_yaml/utils.ts";
+import { JSXInternal } from "preact/src/jsx.d.ts";
 import { AutoSuggest } from "../components/AutoSuggest.tsx";
 
 let ls: Storage;
@@ -175,7 +170,7 @@ const Match = (
       </div>
     );
   }
-  const output = isArray(dataFile)
+  const output = Array.isArray(dataFile)
     ? dataFile
     : Object.keys(dataFile).filter((key: string) =>
       props.match.tags?.every((tag) => {
@@ -201,7 +196,7 @@ const Match = (
             onClick={() => {
               handleNewPrompt(prompt.value.replace(props.match.match, x));
             }}
-            data-tags={isArray(dataFile) ? 'no preview, array' : Object.keys(dataFile[x]).join('\n')}
+            data-tags={Array.isArray(dataFile) ? 'no preview, array' : Object.keys(dataFile[x]).join('\n')}
           >
             {grouped[x].length > 1 && (
               <span class="absolute bottom-[0px] right-[5px] text-blue-600 text-[8px]">

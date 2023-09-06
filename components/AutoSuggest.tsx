@@ -1,8 +1,7 @@
 import { JSX } from "preact";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import { JSXInternal } from "https://esm.sh/v95/preact@10.11.0/src/jsx.d.ts";
-import { isArray } from "https://deno.land/std@0.165.0/encoding/_yaml/utils.ts";
+import { JSXInternal } from "preact/src/jsx.d.ts";
 
 type AutoSuggestProps = {
   dictionary: Record<string, Record<string, boolean>> | string[];
@@ -12,9 +11,8 @@ type AutoSuggestProps = {
 };
 
 const autoSizeTextArea = (
-  e: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event>,
+  e: JSXInternal.TargetedFocusEvent<HTMLTextAreaElement>
 ) => {
-  if (!e.currentTarget || !e.currentTarget.style || !e.currentTarget.scrollHeight) return;
   e.currentTarget.style.height = "auto";
   e.currentTarget.style.height = `${e.currentTarget.scrollHeight + 10}px`;
 };
@@ -22,17 +20,26 @@ const autoSizeTextArea = (
 export const AutoSuggest = (
   props: AutoSuggestProps & JSXInternal.IntrinsicElements["textarea"],
 ) => {
-  const { dictionary, onTagSelect, onNewValue, placeholder = '', value, ...rest } = props;
+  const {
+    dictionary,
+    onTagSelect,
+    onNewValue,
+    placeholder = "",
+    value,
+    ...rest
+  } = props;
 
   const tags = useMemo(() => {
-    const data = dictionary && !isArray(dictionary) ? Object.keys(dictionary).reduce((a, c) => {
-      a.push(...Object.keys(dictionary[c]));
-      return a;
-    }, [] as string[]) || [] : [];
+    const data = dictionary && !Array.isArray(dictionary)
+      ? Object.keys(dictionary).reduce((a, c) => {
+        a.push(...Object.keys(dictionary[c]));
+        return a;
+      }, [] as string[]) || []
+      : [];
 
-    return [ ... new Set(data) ];
-}, [dictionary]);
-  const [input, setInput] = useState(value || '');
+    return [...new Set(data)];
+  }, [dictionary]);
+  const [input, setInput] = useState(value || "");
   const [suggestions, setSuggestions] = useState<string[]>([] as string[]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -40,82 +47,81 @@ export const AutoSuggest = (
 
   useEffect(() => {
     if (value && value !== input) {
-      console.log('setInput', value)
+      console.log("setInput", value);
       setInput(value);
     }
   }, [value]);
 
-  
   const getSuggestions = (input: string) => {
     const suggestions: string[] = [];
     const inputRegex = /<\[(--)?(.*)(\]>)?/;
     const inputMatch = input.match(inputRegex);
-    console.log('inputMatch', inputMatch, input)
-    if (inputMatch && inputMatch[1] && inputMatch[2]) {
-      const prefix = inputMatch[1] === "--";
-        for (const suggestion of tags) {
-          if (suggestion.startsWith(inputMatch[prefix ? 2 : 1])) {
-            suggestions.push(suggestion);
-          }
+    console.log("inputMatch", inputMatch, input);
+    if (inputMatch && (inputMatch[1] || inputMatch[2])) {
+      // const prefix = inputMatch[1] === "--";
+      for (const suggestion of tags) {
+        if (suggestion.startsWith(inputMatch[2])) {
+          suggestions.push(suggestion);
         }
+      }
     }
-    console.log('suggestions', suggestions)
+    console.log("suggestions", suggestions);
     return suggestions;
   };
 
-const handleKeyUp = (
-  event: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event> & { key: string },
-) => {
-  const input = event.currentTarget.value;
-  
-  if (event.key.length === 1) {
-        
-    setInput(input);
+  const handleKeyUp = (
+    event: JSXInternal.TargetedKeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    const input = event.currentTarget.value;
+    const newSuggestions = getSuggestions(input);
 
-    onNewValue && onNewValue(event.currentTarget.value);
-  }
-}
-
+    setSuggestions(newSuggestions);
+    if (
+      event.key.length === 1 || event.key === "Backspace" ||
+      event.key === "Delete"
+    ) {
+      setInput(input);
+      console.log("onNewValue", input);
+      onNewValue && onNewValue(input);
+    }
+  };
 
   const handleKeyDown = (
-    event: JSXInternal.TargetedEvent<HTMLTextAreaElement, Event> & { key: string },
+    event: JSXInternal.TargetedKeyboardEvent<HTMLTextAreaElement>,
   ) => {
-    if (!event.currentTarget?.value) return; 
-    autoSizeTextArea(event);
+    if (!event.currentTarget?.value) return;
+    autoSizeTextArea(event as unknown as JSXInternal.TargetedFocusEvent<HTMLTextAreaElement>);
 
-    const input = event.currentTarget.value + (event.key.length === 1 ? event.key : '');
+    const input = event.currentTarget.value +
+      (event.key.length === 1 ? event.key : "");
     const newSuggestions = getSuggestions(input);
-    console.log(input, newSuggestions, selectedIndex)
-    
-    if (event.key === "ArrowDown" && selectedIndex < newSuggestions.length - 1) {
+    console.log(event.key, input, newSuggestions, selectedIndex);
+
+    if (
+      event.key === "ArrowDown" && selectedIndex < newSuggestions.length - 1
+    ) {
       setSelectedIndex(selectedIndex + 1);
       event.preventDefault();
-    } else if (event.key === "ArrowUp" && selectedIndex > 0) {
-      setSelectedIndex(selectedIndex - 1);
+    } else if (event.key === "ArrowUp") {
+      selectedIndex > 0 && setSelectedIndex(selectedIndex - 1);
       event.preventDefault();
-    } else if (event.key === "Enter" && selectedIndex !== -1) {
-      selectSuggestion(newSuggestions[selectedIndex]);
+    } else if (event.key === "Enter") {
+      selectedIndex !== -1 && selectSuggestion(newSuggestions[selectedIndex]);
       event.preventDefault();
-    } else if (event.key === "Escape") {
-      setSuggestions([]);
-      setSelectedIndex(-1);
-    } else if (event.key === 'Tab') {
+    } else if (event.key === "Tab") {
       if (newSuggestions.length > 0) {
         selectSuggestion(newSuggestions[0]);
       }
       event.preventDefault();
     }
-    
-    newSuggestions.length && setSuggestions(suggestions);
-
-
   };
 
   const selectSuggestion = (suggestion: string) => {
-    console.log('selectSuggestion', suggestion)
+    console.log("selectSuggestion", suggestion);
     onTagSelect(suggestion);
     if (textarea.current) {
-      const newInput = input+''.replace(/<\[(--)?.+?\]>/, `<[${suggestion}]>`);
+      const newInput = input +
+        "".replace(/<\[(--)?.+?\]>/, `<[${suggestion}]>`);
       setInput(newInput);
       setSuggestions([]);
       setSelectedIndex(-1);
@@ -126,13 +132,14 @@ const handleKeyUp = (
   return (
     <div className="relative">
       <textarea
+        role="searchbox"
         ref={textarea}
         placeholder={placeholder}
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}
         onfocusin={autoSizeTextArea}
         value={input}
-        { ...rest }
+        {...rest}
       />
       {suggestions.length > 0 && (
         <ul className="absolute z-50 bg-white rounded-lg shadow-lg overflow-auto max-h-64 divide-y divide-gray-200 divide-opacity-50">

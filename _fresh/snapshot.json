@@ -1,7 +1,7 @@
 {
   "main.js.map": [],
   "main.js": [
-    "chunk-VKFFRPR6.js",
+    "chunk-TXCAW3C2.js",
     "chunk-ZAAOM4FB.js"
   ],
   "deserializer.js.map": [],
@@ -13,12 +13,12 @@
   ],
   "island-main_default.js.map": [],
   "island-main_default.js": [
-    "chunk-VKFFRPR6.js",
+    "chunk-TXCAW3C2.js",
     "chunk-4MQUPPLI.js",
     "chunk-ZAAOM4FB.js"
   ],
-  "chunk-VKFFRPR6.js.map": [],
-  "chunk-VKFFRPR6.js": [],
+  "chunk-TXCAW3C2.js.map": [],
+  "chunk-TXCAW3C2.js": [],
   "chunk-4MQUPPLI.js.map": [],
   "chunk-4MQUPPLI.js": [
     "chunk-ZAAOM4FB.js"
