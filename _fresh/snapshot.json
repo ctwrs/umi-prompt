@@ -1,9 +1,9 @@
 {
-  "build_id": "6c806de03e2cd0a2856c76c6b8317f04a3f0fe8f",
+  "build_id": "34eb3b995116fddba8e7a020b1d059be49d47dce",
   "files": {
     "main.js.map": [],
     "main.js": [
-      "chunk-WRN2GUNK.js",
+      "chunk-AL3M7FPZ.js",
       "chunk-ZAAOM4FB.js"
     ],
     "deserializer.js.map": [],
@@ -15,12 +15,12 @@
     ],
     "island-main_default.js.map": [],
     "island-main_default.js": [
-      "chunk-WRN2GUNK.js",
+      "chunk-AL3M7FPZ.js",
       "chunk-4MQUPPLI.js",
       "chunk-ZAAOM4FB.js"
     ],
-    "chunk-WRN2GUNK.js.map": [],
-    "chunk-WRN2GUNK.js": [],
+    "chunk-AL3M7FPZ.js.map": [],
+    "chunk-AL3M7FPZ.js": [],
     "chunk-4MQUPPLI.js.map": [],
     "chunk-4MQUPPLI.js": [
       "chunk-ZAAOM4FB.js"

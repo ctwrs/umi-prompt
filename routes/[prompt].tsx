@@ -4,7 +4,7 @@ import Main from "../islands/Main.tsx";
 import { PageProps } from "$fresh/server.ts";
 
 export default function Home(props: PageProps) {
-  const prompt = decodeURIComponent(props.params.prompt);
+  const prompt = props.params.prompt;
 
   return <Main prompt={prompt} />;
 }

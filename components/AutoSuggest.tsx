@@ -76,14 +76,9 @@ export const AutoSuggest = (
     const newSuggestions = getSuggestions(input);
 
     setSuggestions(newSuggestions);
-    if (
-      event.key.length === 1 || event.key === "Backspace" ||
-      event.key === "Delete"
-    ) {
-      setInput(input);
-      console.log("onNewValue", input);
-      onNewValue && onNewValue(input);
-    }
+    setInput(input);
+    console.log("onNewValue", input);
+    onNewValue && onNewValue(input);
   };
 
   const handleKeyDown = (
