@@ -1,0 +1,28 @@
+{
+  "main.js.map": [],
+  "main.js": [
+    "chunk-VKFFRPR6.js",
+    "chunk-ZAAOM4FB.js"
+  ],
+  "deserializer.js.map": [],
+  "deserializer.js": [],
+  "signals.js.map": [],
+  "signals.js": [
+    "chunk-4MQUPPLI.js",
+    "chunk-ZAAOM4FB.js"
+  ],
+  "island-main_default.js.map": [],
+  "island-main_default.js": [
+    "chunk-VKFFRPR6.js",
+    "chunk-4MQUPPLI.js",
+    "chunk-ZAAOM4FB.js"
+  ],
+  "chunk-VKFFRPR6.js.map": [],
+  "chunk-VKFFRPR6.js": [],
+  "chunk-4MQUPPLI.js.map": [],
+  "chunk-4MQUPPLI.js": [
+    "chunk-ZAAOM4FB.js"
+  ],
+  "chunk-ZAAOM4FB.js.map": [],
+  "chunk-ZAAOM4FB.js": []
+}
