@@ -1,28 +1,35 @@
 {
-  "main.js.map": [],
-  "main.js": [
-    "chunk-TXCAW3C2.js",
-    "chunk-ZAAOM4FB.js"
-  ],
-  "deserializer.js.map": [],
-  "deserializer.js": [],
-  "signals.js.map": [],
-  "signals.js": [
-    "chunk-4MQUPPLI.js",
-    "chunk-ZAAOM4FB.js"
-  ],
-  "island-main_default.js.map": [],
-  "island-main_default.js": [
-    "chunk-TXCAW3C2.js",
-    "chunk-4MQUPPLI.js",
-    "chunk-ZAAOM4FB.js"
-  ],
-  "chunk-TXCAW3C2.js.map": [],
-  "chunk-TXCAW3C2.js": [],
-  "chunk-4MQUPPLI.js.map": [],
-  "chunk-4MQUPPLI.js": [
-    "chunk-ZAAOM4FB.js"
-  ],
-  "chunk-ZAAOM4FB.js.map": [],
-  "chunk-ZAAOM4FB.js": []
+  "build_id": "6ae64e0fc05c1dffa40afcd283020351499d7a84",
+  "files": {
+    "main.js.map": [],
+    "main.js": [
+      "chunk-BNFLPEVK.js",
+      "chunk-ZAAOM4FB.js"
+    ],
+    "deserializer.js.map": [],
+    "deserializer.js": [],
+    "signals.js.map": [],
+    "signals.js": [
+      "chunk-4MQUPPLI.js",
+      "chunk-ZAAOM4FB.js"
+    ],
+    "island-main_default.js.map": [],
+    "island-main_default.js": [
+      "chunk-BNFLPEVK.js",
+      "chunk-4MQUPPLI.js",
+      "chunk-ZAAOM4FB.js"
+    ],
+    "chunk-BNFLPEVK.js.map": [],
+    "chunk-BNFLPEVK.js": [],
+    "chunk-4MQUPPLI.js.map": [],
+    "chunk-4MQUPPLI.js": [
+      "chunk-ZAAOM4FB.js"
+    ],
+    "plugin-twind-main.js.map": [],
+    "plugin-twind-main.js": [
+      "chunk-ZAAOM4FB.js"
+    ],
+    "chunk-ZAAOM4FB.js.map": [],
+    "chunk-ZAAOM4FB.js": []
+  }
 }
