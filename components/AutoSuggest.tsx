@@ -141,7 +141,7 @@ export const AutoSuggest = (
         value={input}
         {...rest}
       />
-      {suggestions.length > 0 && (
+      {/* {suggestions.length > 0 && (
         <ul className="absolute z-50 bg-white rounded-lg shadow-lg overflow-auto max-h-64 divide-y divide-gray-200 divide-opacity-50">
           {suggestions.map((suggestion, index) => (
             <li
@@ -156,7 +156,7 @@ export const AutoSuggest = (
             </li>
           ))}
         </ul>
-      )}
+      )} */}
     </div>
   );
 };
